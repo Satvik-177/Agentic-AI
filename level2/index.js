@@ -2,7 +2,8 @@ import express from "express"
 import dotenv from "dotenv"
 import { ChatGoogle } from "@langchain/google";
 import { TavilySearch } from "@langchain/tavily";
-import {createAgent} from "langchain"
+import {createAgent, tool} from "langchain"
+import z from "zod";
 
 
 
@@ -13,12 +14,30 @@ const app = express()
 
 app.use(express.json())
 
-const tool = new TavilySearch({
+//built-in tool
+
+const searchTool = new TavilySearch({
 
   maxResults: 5,
   topic: "general",
 
 });
+
+//custom tool
+
+const tool1 = tool(
+    ({email,content})=>{
+        return `email sent successfully with email ${email} and content ${content}`
+    },
+    {
+        name:"email_send_tool",
+        description:"use this tool to send email",
+        schema:z.object({
+            email:z.string().describe("sender email"),
+            content:z.string().describe("mail content for sending")
+        })
+    }
+)
 
 const model = new ChatGoogle("gemini-3.5-flash")
 
@@ -28,7 +47,7 @@ app.post("/chat",async (req,res)=>{
     const agent = createAgent({
 
            model:model,
-           tools:[tool]
+           tools:[searchTool,tool1]
 
     })
 
