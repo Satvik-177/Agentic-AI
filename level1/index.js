@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import { GoogleGenAI } from "@google/genai";
 import { ChatGoogle } from "@langchain/google";
+import { ChatGroq } from "@langchain/groq";
 
 dotenv.config()
 
@@ -41,9 +42,9 @@ app.use(express.json())
 app.post("/chat",async(req,res)=>{
 
     const {prompt} = req.body
-    const ai = new ChatGoogle({
+    const ai = new ChatGroq({
 
-        model:"gemini-3.5-flash",
+        model:"openai/gpt-oss-120b",
         temperature:0.7,
         maxOutputTokens:1000
 
