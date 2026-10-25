@@ -5,7 +5,7 @@ import { TavilySearch } from "@langchain/tavily";
 import {createAgent, tool} from "langchain"
 import { ToolNode } from "@langchain/langgraph/prebuilt"
 import z from "zod";
-import { MessagesAnnotation, StateGraph, MemorySaver } from "@langchain/langgraph";
+import { MessagesAnnotation, StateGraph } from "@langchain/langgraph";
 import { threadId } from "worker_threads";
 
 
@@ -16,7 +16,6 @@ const app = express()
 
 app.use(express.json())
 
-const checkpointer = new MemorySaver();
 
 //built-in tool
 
@@ -75,7 +74,7 @@ const graph = new StateGraph(MessagesAnnotation)
 .addEdge("__start__","agent")
 .addConditionalEdges("agent",shouldContinue)
 .addEdge("tool_node","agent")
-.compile({checkpointer})
+.compile()
 
 
 app.post("/chat",async (req,res)=>{
@@ -92,9 +91,6 @@ app.post("/chat",async (req,res)=>{
 
             }
         ]
-    },
-    {
-        configurable:{thread_id:"1"}
     }
 )
 
