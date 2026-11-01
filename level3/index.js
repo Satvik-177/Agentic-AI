@@ -234,7 +234,7 @@ app.post("/chat/resume", async (req, res) => {
 
     const result = await graph.invoke(
         new Command({
-            resume: String(answer)
+            resume: String(answer) //resume: predefined proprty in LangGraph
         }),
         {
             configurable: {
